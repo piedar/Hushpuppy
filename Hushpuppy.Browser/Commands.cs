@@ -3,6 +3,25 @@ using Eto.Forms;
 
 namespace Hushpuppy.Browser
 {
+	internal sealed class NavigateCommand : Command
+	{
+		public NavigateCommand(BrowserWindow browser, Uri url)
+		{
+			MenuText = "&Navigate";
+			ToolBarText = "Navigate";
+			ToolTip = "Navigate to a page";
+			//Icon = Icon.FromResource("name.ico");
+			Shortcut = Application.Instance.CommonModifier | Keys.T;
+
+			this.Executed +=
+				(Object sender, EventArgs e) =>
+				{
+					BrowserTab tab = browser.CurrentTab ?? browser.AddNewTab();
+					tab.Url = url;
+				};
+		}
+	}
+
 	internal sealed class NewTabCommand : Command
 	{
 		public NewTabCommand(BrowserWindow browser, Uri url)

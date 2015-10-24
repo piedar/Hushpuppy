@@ -6,6 +6,37 @@ using Eto.Forms;
 
 namespace Hushpuppy.Browser
 {
+	class BrowserToolbar : Panel
+	{
+		private readonly TextBox _urlBox = new TextBox();
+
+		public BrowserToolbar()
+		{
+			_urlBox.KeyDown +=
+				(Object sender, KeyEventArgs e) =>
+				{
+					if (e.Key == Keys.Enter)
+					{
+						TextBox urlBox = (TextBox)sender;
+						BrowserWindow browser = urlBox.FindParent<BrowserWindow>();
+
+						UriBuilder builder = new UriBuilder(urlBox.Text);
+						new NavigateCommand(browser, builder.Uri).Execute();
+					}
+				};
+
+			DynamicLayout layout = new DynamicLayout();
+			layout.AddColumn(_urlBox);
+
+			this.Content = layout;
+		}
+
+		public Uri Url
+		{
+			set { _urlBox.Text = value.ToString(); }
+		}
+	}
+
 	internal sealed class BrowserWindow : Form
 	{
 		private readonly TabControl _tabControl = new TabControl();
@@ -20,26 +51,20 @@ namespace Hushpuppy.Browser
 			ButtonMenuItem fileMenu = Menu.Items.GetSubmenu("&File");
 			fileMenu.Items.AddRange(new Command[] { new NewTabCommand(this, _homePage), new CloseTabCommand(this), new NewWindowCommand(), });
 
-			new NewTabCommand(this, _homePage).Execute();
-
-			TextBox urlBox = new TextBox();
-			urlBox.KeyDown +=
-				(Object sender, KeyEventArgs e) =>
-				{
-					if (e.Key == Keys.Enter)
-					{
-						BrowserTab currentTab = this.CurrentTab ?? this.AddNewTab();
-						UriBuilder builder = new UriBuilder(urlBox.Text);
-						currentTab.Url = builder.Uri;
-					}
-				};
+			BrowserToolbar = new BrowserToolbar();
 
 			DynamicLayout layout = new DynamicLayout();
-			layout.AddColumn(urlBox, _tabControl);
+			layout.AddColumn(BrowserToolbar, _tabControl);
 
 			this.Content = layout;
+
+			new NavigateCommand(this, _homePage).Execute();
 		}
 
+		internal BrowserToolbar BrowserToolbar
+		{
+			get; private set;
+		}
 
 		public BrowserTab CurrentTab
 		{
@@ -61,7 +86,7 @@ namespace Hushpuppy.Browser
 				throw new ArgumentNullException("tab");
 			}
 
-			tab.Stop();
+			tab.StopLoading();
 
 			Int32 index = _tabControl.Pages.IndexOf(tab);
 			Boolean removed = _tabControl.Pages.Remove(tab);

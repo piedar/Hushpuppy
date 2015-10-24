@@ -19,15 +19,18 @@ namespace Hushpuppy.Browser
 
 			_webView.DocumentTitleChanged +=
 				(Object sender, WebViewTitleEventArgs e) =>
-			{
-				this.Text = e.Title;
-			};
+				{
+					this.Text = e.Title;
+				};
 
 			_webView.Navigated +=
 				async (Object sender, WebViewLoadedEventArgs e) =>
-			{
-				this.Image = await FetchFaviconAsync(e.Uri);
-			};
+				{
+					//BrowserWindow browser = this.FindParent<BrowserWindow>();
+					//browser.BrowserToolbar.Url = e.Uri;
+
+					this.Image = await FetchFaviconAsync(e.Uri);
+				};
 
 			this.Content = _webView;
 		}
@@ -38,7 +41,7 @@ namespace Hushpuppy.Browser
 			set { _webView.Url = value; }
 		}
 
-		public void Stop()
+		public void StopLoading()
 		{
 			_webView.Stop();
 		}
