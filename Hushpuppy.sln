@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HushpuppyConsole", "HushpuppyConsole\HushpuppyConsole.csproj", "{C0F14276-A87A-46A9-93A1-FB72E5DCF5B0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy", "Hushpuppy\Hushpuppy.csproj", "{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Browser", "Hushpuppy.Browser\Hushpuppy.Browser.csproj", "{81DCBA1F-CF73-46D8-A060-C5C41C329D08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Torturer", "Hushpuppy.Torturer\Hushpuppy.Torturer.csproj", "{C471CFC8-B1E7-4635-B6D0-764142758042}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Server", "Hushpuppy.Server\Hushpuppy.Server.csproj", "{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,13 +19,17 @@ Global
 		{81DCBA1F-CF73-46D8-A060-C5C41C329D08}.Debug|x86.Build.0 = Debug|Any CPU
 		{81DCBA1F-CF73-46D8-A060-C5C41C329D08}.Release|x86.ActiveCfg = Release|Any CPU
 		{81DCBA1F-CF73-46D8-A060-C5C41C329D08}.Release|x86.Build.0 = Release|Any CPU
+		{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}.Debug|x86.ActiveCfg = Debug|x86
+		{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}.Debug|x86.Build.0 = Debug|x86
+		{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}.Release|x86.ActiveCfg = Release|x86
+		{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}.Release|x86.Build.0 = Release|x86
 		{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}.Debug|x86.Build.0 = Debug|Any CPU
 		{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}.Release|x86.ActiveCfg = Release|Any CPU
 		{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}.Release|x86.Build.0 = Release|Any CPU
-		{C0F14276-A87A-46A9-93A1-FB72E5DCF5B0}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{C0F14276-A87A-46A9-93A1-FB72E5DCF5B0}.Debug|x86.Build.0 = Debug|Any CPU
-		{C0F14276-A87A-46A9-93A1-FB72E5DCF5B0}.Release|x86.ActiveCfg = Release|Any CPU
-		{C0F14276-A87A-46A9-93A1-FB72E5DCF5B0}.Release|x86.Build.0 = Release|Any CPU
+		{C471CFC8-B1E7-4635-B6D0-764142758042}.Debug|x86.ActiveCfg = Debug|x86
+		{C471CFC8-B1E7-4635-B6D0-764142758042}.Debug|x86.Build.0 = Debug|x86
+		{C471CFC8-B1E7-4635-B6D0-764142758042}.Release|x86.ActiveCfg = Release|x86
+		{C471CFC8-B1E7-4635-B6D0-764142758042}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 EndGlobal
