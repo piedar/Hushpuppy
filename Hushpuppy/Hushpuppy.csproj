@@ -36,6 +36,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="HTTPServer.cs" />
     <Compile Include="HTTPClient.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="ServiceHandlers\StaticFileServiceHandler.cs" />
+    <Compile Include="ServiceHandlers\StaticDirectoryServiceHandler.cs" />
+    <Compile Include="IServiceHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="ServiceHandlers\" />
+  </ItemGroup>
 </Project>
