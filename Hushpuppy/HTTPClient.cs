@@ -55,9 +55,19 @@ namespace Hushpuppy
 
 			for (Int64 index = 0; index < requestCount; index++)
 			{
-				Task<String> fetchTask = client.GetStringAsync(target);
+				count = index + 1;
 
+				Task<String> fetchTask = client.GetStringAsync(target);
 				pendingTasks.Add(fetchTask);
+
+				if (pendingTasks.Count > 20)
+				{
+					foreach (var task in pendingTasks.ConsumeWhere(null))
+					{
+						String result = await task;
+						charsRead += result.Length;
+					}
+				}
 
 				/*
 				using (HttpResponseMessage response = await client.GetAsync(target))
@@ -68,18 +78,11 @@ namespace Hushpuppy
 					{
 						charsRead += result.Length;
 					}
-
-					count = index + 1;
-					if (count % 10 == 0)
-					{
-						Console.WriteLine("Read {0} results in {2} ({3:0} chars / ms)",
-							count, charsRead, stopwatch.Elapsed, charsRead / stopwatch.Elapsed.TotalMilliseconds);
-					}
 				}
 				*/
 			}
 
-			foreach (var task in pendingTasks)
+			foreach (var task in pendingTasks.ConsumeWhere(null))
 			{
 				String result = await task;
 				charsRead += result.Length;

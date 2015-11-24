@@ -4,8 +4,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Hushpuppy;
 
-namespace Hushpuppy
+namespace Hushpuppy.Server
 {
 	static class ConsoleProgram
 	{
