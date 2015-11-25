@@ -24,10 +24,20 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using CommandLine;
 using Hushpuppy;
 
 namespace Hushpuppy.Torturer
 {
+	class Options
+	{
+		[Value(0, HelpText="Url to torture", Required=true)]
+		public Uri Target { get; set; }
+
+		[Option(HelpText="Number of requests", Default=500)]
+		public Int32 Requests { get; set; }
+	}
+
 	static class ConsoleProgram
 	{
 		static async Task MainAsync(String[] args)
@@ -40,9 +50,14 @@ namespace Hushpuppy.Torturer
 					cancellationSource.Cancel();
 				};
 
-			var target = new Uri("http://localhost:8080/storage/www/TortureTargets/dlanham-FireyFox.jpg");
+			ParserResult<Options> result = CommandLine.Parser.Default.ParseArguments<Options>(args);
+			Options options = result.MapResult(opts => opts, errors => null);
+			if (options == null)
+			{
+				return;
+			}
 
-			Task httpdTorturer = HttpClient.TortureAsync(target, 500);
+			Task httpdTorturer = HttpClient.TortureAsync(options.Target, options.Requests);
 			await httpdTorturer;
 		}
 

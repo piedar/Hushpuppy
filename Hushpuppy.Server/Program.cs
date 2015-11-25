@@ -24,11 +24,21 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using CommandLine;
 using Hushpuppy;
 using Hushpuppy.Services;
 
 namespace Hushpuppy.Server
 {
+	class Options
+	{
+		[Value(0, HelpText="Root directory to serve", Required=true)]
+		public DirectoryInfo RootDirectory { get; set; }
+
+		[Option(HelpText="Port to listen on", Default=8080)]
+		public Int32 Port { get; set; }
+	}
+
 	static class ConsoleProgram
 	{
 		static async Task MainAsync(String[] args)
@@ -41,15 +51,21 @@ namespace Hushpuppy.Server
 					cancellationSource.Cancel();
 				};
 
-			DirectoryInfo root = new DirectoryInfo(@"/home/benn/httpd");
+			ParserResult<Options> result = CommandLine.Parser.Default.ParseArguments<Options>(args);
+			Options options = result.MapResult(opts => opts, errors => null);
+			if (options == null)
+			{
+				return;
+			}
+
 			var services = new IHttpService[]
 			{
-				new StaticFileService(root),
-				new IndexFileService(root),
-				new DirectoryListingService(root),
+				new StaticFileService(options.RootDirectory),
+				new IndexFileService(options.RootDirectory),
+				new DirectoryListingService(options.RootDirectory),
 			};
 
-			Task httpd = HttpServer.ListenAsync(services, 8080, cancellationSource.Token);
+			Task httpd = HttpServer.ListenAsync(services, options.Port, cancellationSource.Token);
 			await httpd;
 		}
 
