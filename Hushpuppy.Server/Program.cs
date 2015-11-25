@@ -25,6 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Hushpuppy;
+using Hushpuppy.Services;
 
 namespace Hushpuppy.Server
 {
@@ -41,7 +42,14 @@ namespace Hushpuppy.Server
 				};
 
 			DirectoryInfo root = new DirectoryInfo(@"/home/benn/httpd");
-			Task httpd = HTTPServer.ListenAsync(root, 8080, cancellationSource.Token);
+			var services = new IHttpService[]
+			{
+				new StaticFileService(root),
+				new IndexFileService(root),
+				new DirectoryListingService(root),
+			};
+
+			Task httpd = HttpServer.ListenAsync(services, 8080, cancellationSource.Token);
 			await httpd;
 		}
 

@@ -35,6 +35,17 @@ namespace Hushpuppy
 					StringComparison.InvariantCultureIgnoreCase));
 		}
 
+		public static String ResolveLocalPath(this DirectoryInfo root, Uri url)
+		{
+			String relativePath = Uri.UnescapeDataString(url.AbsolutePath).TrimStart('/');
+			String fullPath = Path.GetFullPath(Path.Combine(root.FullName, relativePath));
+			if (!fullPath.StartsWith(root.FullName))
+			{
+				return String.Empty; // Don't allow access to path outside of root directory.
+			}
+			return fullPath;
+		}
+
 		/// <summary>
 		/// Removes and enumerates items from <paramref name="source"/> where <paramref name="predicate"/> returns true or is null.
 		/// </summary>

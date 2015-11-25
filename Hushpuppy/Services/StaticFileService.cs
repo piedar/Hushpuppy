@@ -25,27 +25,31 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Hushpuppy
+namespace Hushpuppy.Services
 {
-	class StaticFileServiceHandler : IServiceHandler
+	public class StaticFileService : IHttpService
 	{
-		public StaticFileServiceHandler() { }
+		private readonly DirectoryInfo _root;
 
-		public Boolean CanServe(String path)
+		public StaticFileService(DirectoryInfo root)
 		{
-			return File.Exists(path);
+			_root = root;
 		}
 
-		public Task ServeAsync(String path, HttpListenerResponse response)
+		public Task ServeAsync(HttpListenerContext context)
 		{
+			if (context.Request.HttpMethod != "GET")
+			{
+				throw new NotSupportedException("HttpMethod " + context.Request.HttpMethod + " not supported");
+			}
+
+			String path = _root.ResolveLocalPath(context.Request.Url);
 			FileInfo file = new FileInfo(path);
-			return ServeFileAsync(file, response);
+			return ServeFileAsync(file, context.Response);
 		}
 
-		private static async Task ServeFileAsync(FileInfo file, HttpListenerResponse response)
+		internal static async Task ServeFileAsync(FileInfo file, HttpListenerResponse response)
 		{
-			Debug.WriteLine("Serving file {0}", (Object)file.Name);
-
 			using (Stream input = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				String mime = MimeMapping.GetMimeMapping(file.Name);

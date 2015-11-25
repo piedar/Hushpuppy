@@ -40,14 +40,9 @@ namespace Hushpuppy.Torturer
 					cancellationSource.Cancel();
 				};
 
-			var targets = new []
-			{
-				new Uri("http://localhost:8080/storage/www/TortureTargets/dlanham-FireyFox.jpg"),
-				//new Uri("http://localhost:8080/storage/www/TortureTargets/The%20Character%20of%20Physical%20Law%201%20-%20The%20Law%20of%20Gravitation.mp4"),
-				//new Uri("http://localhost:8080/storage/images/wallpaper/dlanham-FireyFox.jpg"),
-			};
+			var target = new Uri("http://localhost:8080/storage/www/TortureTargets/dlanham-FireyFox.jpg");
 
-			Task httpdTorturer = HTTPClient.TortureAsync(targets, 500);
+			Task httpdTorturer = HttpClient.TortureAsync(target, 500);
 			await httpdTorturer;
 		}
 

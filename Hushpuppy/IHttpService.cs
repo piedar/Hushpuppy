@@ -24,10 +24,8 @@ using System.Threading.Tasks;
 
 namespace Hushpuppy
 {
-	interface IServiceHandler
+	public interface IHttpService
 	{
-		Boolean CanServe(String path);
-		Task ServeAsync(String path, HttpListenerResponse response);
+		Task ServeAsync(HttpListenerContext context);
 	}
 }
-

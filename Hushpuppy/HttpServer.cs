@@ -30,7 +30,7 @@ using System.Threading.Tasks;
 
 namespace Hushpuppy
 {
-	public static class HTTPServer
+	public static class HttpServer
 	{
 		private static Int32 ChoosePort()
 		{
@@ -42,14 +42,8 @@ namespace Hushpuppy
 			return port;
 		}
 
-		public static async Task ListenAsync(DirectoryInfo root, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
+		public static async Task ListenAsync(IReadOnlyCollection<IHttpService> services, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
 		{
-			var serviceHandlers = new IServiceHandler[]
-			{
-				new StaticFileServiceHandler(),
-				new StaticDirectoryServiceHandler(root),
-			};
-
 			port = port ?? ChoosePort();
 
 			HttpListener listener = new HttpListener();
@@ -69,7 +63,7 @@ namespace Hushpuppy
 						HttpListenerContext context = await listener.GetContextAsync();
 
 						// Begin serving the request.
-						Task serveTask = ServeAsync(root, context, serviceHandlers).ContinueWith((task) => context.Response.Close());
+						Task serveTask = ServeAsync(context, services);
 						pendingTasks.Add(serveTask);
 
 						// Reap completed tasks and propagate exceptions.
@@ -90,56 +84,35 @@ namespace Hushpuppy
 			}
 		}
 
-		private static async Task ServeAsync(DirectoryInfo root, HttpListenerContext context, IEnumerable<IServiceHandler> serviceHandlers)
+		private static async Task ServeAsync(HttpListenerContext context, IEnumerable<IHttpService> services)
 		{
-			String path = Uri.UnescapeDataString(context.Request.Url.AbsolutePath);
-			Debug.WriteLine("Requested path {0}", (Object)path);
-			path = path.TrimStart('/');
-
-			path = ResolveLocalPath(root, path);
-
-			// Handlers should set this when populating response.
+			// Services should set this when populating response.
 			context.Response.StatusCode = (Int32)HttpStatusCode.InternalServerError;
 
-			foreach (IServiceHandler handler in serviceHandlers)
+			try
 			{
-				try
+				foreach (IHttpService service in services)
 				{
-					if (handler.CanServe(path))
+					try
 					{
-						await handler.ServeAsync(path, context.Response);
+						await service.ServeAsync(context);
+						Debug.WriteLine("{0} successfully served {1}", service.ToString(), context.Request.Url);
 						return; // success
 					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine("{0} failed to serve {1}", service.ToString(), context.Request.Url);
+						Debug.WriteLine("\t" + ex.GetType() + ": " + ex.Message);
+					}
 				}
-				catch (Exception ex) when (ShouldIgnoreServiceException(ex)) { }
-				catch (Exception ex)
-				{
-					Debug.WriteLine("Service handler {0} failed to serve {1} because {2}", handler.GetType().Name, path, ex.Message);
-				}
+
+				// Nobody served the request.
+				context.Response.StatusCode = (Int32)HttpStatusCode.NotFound;
 			}
-
-			// None of the handlers served the request.
-			context.Response.StatusCode = (Int32)HttpStatusCode.NotFound;
-		}
-
-		private static String ResolveLocalPath(DirectoryInfo root, String relativePath)
-		{
-			String fullPath = Path.GetFullPath(Path.Combine(root.FullName, relativePath));
-			if (!fullPath.StartsWith(root.FullName))
+			finally
 			{
-				return String.Empty; // Don't allow access to path outside of root directory.
+				context.Response.Close();
 			}
-			return fullPath;
-		}
-
-		private static Boolean ShouldIgnoreServiceException(Exception ex)
-		{
-			SocketException socketException = (ex as SocketException) ?? (ex.InnerException as SocketException);
-			if (socketException != null)
-			{
-				return (socketException.SocketErrorCode == SocketError.ConnectionReset);
-			}
-			return false;
 		}
 	}
 }

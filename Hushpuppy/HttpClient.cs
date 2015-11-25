@@ -32,15 +32,11 @@ using System.Diagnostics;
 
 namespace Hushpuppy
 {
-	public class HTTPClient
+	public static class HttpClient
 	{
-		public HTTPClient()
+		internal static async Task<String> DownloadPageAsync(String uri)
 		{
-		}
-
-		public static async Task<String> DownloadPageAsync(String uri)
-		{
-			using (HttpClient client = new HttpClient())
+			using (var client = new System.Net.Http.HttpClient())
 			using (HttpResponseMessage response = await client.GetAsync(uri))
 			using (HttpContent content = response.Content)
 			{
@@ -49,23 +45,7 @@ namespace Hushpuppy
 			}
 		}
 
-		public static async Task TortureAsync(IEnumerable<Uri> targets, Int64 requestCount)
-		{
-			using (HttpClient client = new HttpClient())
-			{
-				var pendingTasks = new List<Task>();
-
-				foreach (Uri target in targets)
-				{
-					Task tortureTask = TortureAsync(client, target, requestCount);
-					pendingTasks.Add(tortureTask);
-				}
-
-				await Task.WhenAll(pendingTasks);
-			}
-		}
-
-		private static async Task TortureAsync(HttpClient client, Uri target, Int64 requestCount)
+		public static async Task TortureAsync(Uri target, Int64 requestCount)
 		{
 			Int64 count = 0;
 			Int64 charsRead = 0;
@@ -73,39 +53,42 @@ namespace Hushpuppy
 
 			var pendingTasks = new List<Task<String>>();
 
-			for (Int64 index = 0; index < requestCount; index++)
+			using (var client = new System.Net.Http.HttpClient())
 			{
-				count = index + 1;
-
-				Task<String> fetchTask = client.GetStringAsync(target);
-				pendingTasks.Add(fetchTask);
-
-				if (pendingTasks.Count > 20)
+				for (Int64 index = 0; index < requestCount; index++)
 				{
-					foreach (var task in pendingTasks.ConsumeWhere(null))
+					count = index + 1;
+
+					Task<String> fetchTask = client.GetStringAsync(target);
+					pendingTasks.Add(fetchTask);
+
+					if (pendingTasks.Count > 20)
 					{
-						String result = await task;
-						charsRead += result.Length;
+						foreach (var task in pendingTasks.ConsumeWhere(null))
+						{
+							String result = await task;
+							charsRead += result.Length;
+						}
 					}
+
+					/*
+					using (HttpResponseMessage response = await client.GetAsync(target))
+					using (HttpContent content = response.Content)
+					{
+						String result = await content.ReadAsStringAsync();
+						lock (stopwatch)
+						{
+							charsRead += result.Length;
+						}
+					}
+					*/
 				}
 
-				/*
-				using (HttpResponseMessage response = await client.GetAsync(target))
-				using (HttpContent content = response.Content)
+				foreach (var task in pendingTasks.ConsumeWhere(null))
 				{
-					String result = await content.ReadAsStringAsync();
-					lock (stopwatch)
-					{
-						charsRead += result.Length;
-					}
+					String result = await task;
+					charsRead += result.Length;
 				}
-				*/
-			}
-
-			foreach (var task in pendingTasks.ConsumeWhere(null))
-			{
-				String result = await task;
-				charsRead += result.Length;
 			}
 
 			Console.WriteLine("Tortured {0} with {1} requests in {2} ({3:0} chars / ms)",
