@@ -25,7 +25,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using CommandLine;
-using Hushpuppy;
+using Hushpuppy.Http;
 
 namespace Hushpuppy.Torturer
 {
@@ -57,7 +57,7 @@ namespace Hushpuppy.Torturer
 				return;
 			}
 
-			Task httpdTorturer = HttpClient.TortureAsync(options.Target, options.Requests);
+			Task httpdTorturer = HttpTorturer.TortureAsync(options.Target, options.Requests);
 			await httpdTorturer;
 		}
 

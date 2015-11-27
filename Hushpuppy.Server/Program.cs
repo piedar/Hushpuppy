@@ -25,8 +25,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using CommandLine;
-using Hushpuppy;
-using Hushpuppy.Services;
+using Hushpuppy.Http;
+using Hushpuppy.Http.Services;
 
 namespace Hushpuppy.Server
 {

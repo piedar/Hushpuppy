@@ -40,7 +40,7 @@
     <Compile Include="Services\DirectoryListingService.cs" />
     <Compile Include="IHttpService.cs" />
     <Compile Include="HttpServer.cs" />
-    <Compile Include="HttpClient.cs" />
+    <Compile Include="HttpTorturer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

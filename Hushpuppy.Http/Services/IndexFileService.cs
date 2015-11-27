@@ -27,7 +27,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Hushpuppy.Services
+namespace Hushpuppy.Http.Services
 {
 	public class IndexFileService : IHttpService
 	{

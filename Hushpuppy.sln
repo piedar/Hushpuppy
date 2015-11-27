@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy", "Hushpuppy\Hushpuppy.csproj", "{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Http", "Hushpuppy.Http\Hushpuppy.Http.csproj", "{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Browser", "Hushpuppy.Browser\Hushpuppy.Browser.csproj", "{81DCBA1F-CF73-46D8-A060-C5C41C329D08}"
 EndProject

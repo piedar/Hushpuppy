@@ -22,7 +22,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Hushpuppy
+namespace Hushpuppy.Http
 {
 	public interface IHttpService
 	{

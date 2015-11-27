@@ -30,13 +30,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
 
-namespace Hushpuppy
+namespace Hushpuppy.Http
 {
-	public static class HttpClient
+	public static class HttpTorturer
 	{
 		internal static async Task<String> DownloadPageAsync(String uri)
 		{
-			using (var client = new System.Net.Http.HttpClient())
+			using (HttpClient client = new HttpClient())
 			using (HttpResponseMessage response = await client.GetAsync(uri))
 			using (HttpContent content = response.Content)
 			{
@@ -53,7 +53,7 @@ namespace Hushpuppy
 
 			var pendingTasks = new List<Task<String>>();
 
-			using (var client = new System.Net.Http.HttpClient())
+			using (HttpClient client = new HttpClient())
 			{
 				for (Int64 index = 0; index < requestCount; index++)
 				{

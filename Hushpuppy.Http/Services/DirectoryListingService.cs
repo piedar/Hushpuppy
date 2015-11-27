@@ -26,7 +26,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Hushpuppy
+namespace Hushpuppy.Http.Services
 {
 	public class DirectoryListingService : IHttpService
 	{

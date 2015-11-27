@@ -39,12 +39,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Hushpuppy\Hushpuppy.csproj">
-      <Project>{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}</Project>
-      <Name>Hushpuppy</Name>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <ProjectReference Include="..\Hushpuppy.Http\Hushpuppy.Http.csproj">
+      <Project>{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}</Project>
+      <Name>Hushpuppy.Http</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

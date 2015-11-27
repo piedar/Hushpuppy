@@ -22,7 +22,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace Hushpuppy
+namespace Hushpuppy.Http
 {
 	static class Extensions
 	{

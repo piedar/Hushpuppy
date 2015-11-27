@@ -25,7 +25,7 @@ using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Hushpuppy.Services
+namespace Hushpuppy.Http.Services
 {
 	public class StaticFileService : IHttpService
 	{
