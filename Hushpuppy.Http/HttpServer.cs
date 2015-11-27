@@ -30,11 +30,13 @@ using System.Threading.Tasks;
 
 namespace Hushpuppy.Http
 {
+	/// <summary>
+	/// Serves Http requests using a stateless, asynchronous model.
+	/// </summary>
 	public static class HttpServer
 	{
-		private static Int32 ChoosePort()
+		private static Int32 GetUnusedPort()
 		{
-			// get an empty port
 			TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
 			listener.Start();
 			Int32 port = ((IPEndPoint)listener.LocalEndpoint).Port;
@@ -42,9 +44,15 @@ namespace Hushpuppy.Http
 			return port;
 		}
 
+		/// <summary>
+		/// Listens for Http requests asynchronously and serves them with the given <paramref name="services"/>.
+		/// </summary>
+		/// <param name="services">Collection of services that will serve requests.</param>
+		/// <param name="port">Port to listen on (Optional).</param>
+		/// <param name="cancellation">Cancellation token to stop listening (Optional).</param>
 		public static async Task ListenAsync(IReadOnlyCollection<IHttpService> services, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
 		{
-			port = port ?? ChoosePort();
+			port = port ?? GetUnusedPort();
 
 			HttpListener listener = new HttpListener();
 			listener.Prefixes.Add("http://*:" + port.ToString() + "/");

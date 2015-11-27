@@ -27,6 +27,9 @@ using System.Web;
 
 namespace Hushpuppy.Http.Services
 {
+	/// <summary>
+	/// Handles a GET request by serving the requested file.
+	/// </summary>
 	public class StaticFileService : IHttpService
 	{
 		private readonly DirectoryInfo _root;

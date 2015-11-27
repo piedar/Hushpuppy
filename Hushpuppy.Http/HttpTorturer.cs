@@ -45,7 +45,13 @@ namespace Hushpuppy.Http
 			}
 		}
 
-		public static async Task TortureAsync(Uri target, Int64 requestCount)
+		/// <summary>
+		/// Concurrently requests the given <paramref name="target"/> <paramref name="requestCount"/> times.
+		/// </summary>
+		/// <param name="target">Uri to torture.</param>
+		/// <param name="requestCount">Number of requests.</param>
+		/// <param name="concurrentRequestLimit">Maximum number of concurrent requests.</param>
+		public static async Task TortureAsync(Uri target, Int64 requestCount, Int64 concurrentRequestLimit = 22)
 		{
 			Int64 count = 0;
 			Int64 charsRead = 0;
@@ -62,7 +68,7 @@ namespace Hushpuppy.Http
 					Task<String> fetchTask = client.GetStringAsync(target);
 					pendingTasks.Add(fetchTask);
 
-					if (pendingTasks.Count > 20)
+					if (pendingTasks.Count > concurrentRequestLimit)
 					{
 						foreach (var task in pendingTasks.ConsumeWhere(null))
 						{

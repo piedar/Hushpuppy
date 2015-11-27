@@ -24,8 +24,18 @@ using System.Threading.Tasks;
 
 namespace Hushpuppy.Http
 {
+	/// <summary>
+	/// Handles requests and populates responses.
+	/// </summary>
 	public interface IHttpService
 	{
+		/// <summary>
+		/// Serves the given <paramref name="context"/> asynchronously.
+		/// Throws an exception if the request was not handled successfully.
+		/// </summary>
+		/// <param name="context"></param>
+		/// <exception cref="AggregateException">One or more errors occurred.</exception>
+		/// <exception cref="NotSupportedException">The service does not support the given request (e.g. a GET service can't handle a POST request).</exception>
 		Task ServeAsync(HttpListenerContext context);
 	}
 }

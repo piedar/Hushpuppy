@@ -28,6 +28,9 @@ using System.Web;
 
 namespace Hushpuppy.Http.Services
 {
+	/// <summary>
+	/// Handles a GET request by listing the contents of the requested directory.
+	/// </summary>
 	public class DirectoryListingService : IHttpService
 	{
 		private readonly DirectoryInfo _root;

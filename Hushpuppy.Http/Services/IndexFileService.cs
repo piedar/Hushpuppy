@@ -29,6 +29,9 @@ using System.Web;
 
 namespace Hushpuppy.Http.Services
 {
+	/// <summary>
+	/// Handles a GET request by serving an index file from the requested directory.
+	/// </summary>
 	public class IndexFileService : IHttpService
 	{
 		private static readonly String[] _indexFiles =

@@ -5,7 +5,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B5D8DBEE-FFDF-464C-B747-4C0154FF7664}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Hushpuppy</RootNamespace>
+    <RootNamespace>Hushpuppy.Http</RootNamespace>
     <AssemblyName>Hushpuppy</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
@@ -46,13 +46,4 @@
   <ItemGroup>
     <Folder Include="Services\" />
   </ItemGroup>
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <StandardHeader Text=" &#xA; This file is a part of [Hushpuppy](https://github.com/piedar/Hushpuppy)..&#xA; &#xA; Author(s):&#xA;      ${AuthorName} &#xA;&#xA; Copyright (c) ${Year} ${CopyrightHolder} (${AuthorEmail})&#xA;&#xA; This program is free software: you can redistribute it and/or modify&#xA; it under the terms of the GNU General Public License as published by&#xA; the Free Software Foundation, either version 3 of the License, or&#xA; (at your option) any later version.&#xA;&#xA; This program is distributed in the hope that it will be useful,&#xA; but WITHOUT ANY WARRANTY; without even the implied warranty of&#xA; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the&#xA; GNU General Public License for more details.&#xA;&#xA; You should have received a copy of the GNU General Public License&#xA; along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;." IncludeInNewFiles="True" />
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>
