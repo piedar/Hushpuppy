@@ -21,6 +21,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Web;
 
 namespace Hushpuppy.Http
 {
@@ -62,6 +63,22 @@ namespace Hushpuppy.Http
 					i--;
 					yield return item;
 				}
+			}
+		}
+
+		public static String GetMimeType(this FileInfo file)
+		{
+			try
+			{
+				using (Magic magic = new Magic(MagicFlags.MAGIC_MIME))
+				{
+					return magic.Lookup(file.FullName);
+				}
+			}
+			catch
+			{
+				// Magic is not available on all platforms - fall back on file extension mapping.
+				return MimeMapping.GetMimeMapping(file.Name);
 			}
 		}
 	}

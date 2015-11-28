@@ -23,7 +23,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace Hushpuppy.Http.Services
 {
@@ -55,7 +54,7 @@ namespace Hushpuppy.Http.Services
 		{
 			using (Stream input = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
-				String mime = MimeMapping.GetMimeMapping(file.Name);
+				String mime = file.GetMimeType();
 				response.ContentType = mime ?? "application/octet-stream";
 				response.ContentLength64 = input.Length;
 				response.AddHeader("Date", DateTime.Now.ToString("r"));
