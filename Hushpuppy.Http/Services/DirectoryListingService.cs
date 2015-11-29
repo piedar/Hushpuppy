@@ -42,12 +42,12 @@ namespace Hushpuppy.Http.Services
 
 		public Task ServeAsync(HttpListenerContext context)
 		{
-			if (context.Request.HttpMethod != "GET")
+			if (context.Request.HttpMethod != HttpMethod.GET)
 			{
 				throw new NotSupportedException("HttpMethod " + context.Request.HttpMethod + " not supported");
 			}
 
-			String path = _root.ResolveLocalPath(context.Request.Url);
+			String path = context.Request.Url.ResolveLocalPath(_root);
 			DirectoryInfo directory = new DirectoryInfo(path);
 			return ServeDirectoryListingAsync(_root, directory, context.Response);
 		}

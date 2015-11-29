@@ -40,12 +40,12 @@ namespace Hushpuppy.Http.Services
 
 		public Task ServeAsync(HttpListenerContext context)
 		{
-			if (context.Request.HttpMethod != "GET")
+			if (context.Request.HttpMethod != HttpMethod.GET)
 			{
 				throw new NotSupportedException("HttpMethod " + context.Request.HttpMethod + " not supported");
 			}
 
-			String path = _root.ResolveLocalPath(context.Request.Url);
+			String path = context.Request.Url.ResolveLocalPath(_root);
 			FileInfo file = new FileInfo(path);
 			return ServeFileAsync(file, context.Response);
 		}

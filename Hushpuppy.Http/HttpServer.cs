@@ -50,7 +50,7 @@ namespace Hushpuppy.Http
 		/// <param name="services">Collection of services that will serve requests.</param>
 		/// <param name="port">Port to listen on (Optional).</param>
 		/// <param name="cancellation">Cancellation token to stop listening (Optional).</param>
-		public static async Task ListenAsync(IReadOnlyCollection<IHttpService> services, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
+		public static async Task ListenAsync(IReadOnlyCollection<Route> routes, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
 		{
 			port = port ?? GetUnusedPort();
 
@@ -71,7 +71,7 @@ namespace Hushpuppy.Http
 						HttpListenerContext context = await listener.GetContextAsync();
 
 						// Begin serving the request.
-						Task serveTask = ServeAsync(context, services);
+						Task serveTask = ServeAsync(context, routes);
 						pendingTasks.Add(serveTask);
 
 						// Reap completed tasks and propagate exceptions.
@@ -92,24 +92,25 @@ namespace Hushpuppy.Http
 			}
 		}
 
-		private static async Task ServeAsync(HttpListenerContext context, IEnumerable<IHttpService> services)
+		private static async Task ServeAsync(HttpListenerContext context, IEnumerable<Route> routes)
 		{
 			// Services should set this when populating response.
 			context.Response.StatusCode = (Int32)HttpStatusCode.InternalServerError;
 
 			try
 			{
-				foreach (IHttpService service in services)
+				IEnumerable<Route> matchingRoutes = routes.Where(route => IsMatch(route, context));
+				foreach (Route route in matchingRoutes)
 				{
 					try
 					{
-						await service.ServeAsync(context);
-						Debug.WriteLine("{0} successfully served {1}", service.ToString(), context.Request.Url);
+						await route.Service.ServeAsync(context);
+						Debug.WriteLine("{0} successfully served {1}", route.Service.ToString(), context.Request.Url);
 						return; // success
 					}
 					catch (Exception ex)
 					{
-						Debug.WriteLine("{0} failed to serve {1}", service.ToString(), context.Request.Url);
+						Debug.WriteLine("{0} failed to serve {1}", route.Service.ToString(), context.Request.Url);
 						Debug.WriteLine("\t" + ex.GetType() + ": " + ex.Message);
 					}
 				}
@@ -121,6 +122,15 @@ namespace Hushpuppy.Http
 			{
 				context.Response.Close();
 			}
+		}
+
+		private static Boolean IsMatch(Route route, HttpListenerContext context)
+		{
+			String routePrefix = route.Prefix.TrimStart('/');
+			String requestPath = context.Request.Url.AbsolutePath.TrimStart('/');
+
+			return route.Method == context.Request.HttpMethod
+				&& requestPath.StartsWith(routePrefix);
 		}
 	}
 }

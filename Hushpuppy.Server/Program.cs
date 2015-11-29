@@ -58,14 +58,14 @@ namespace Hushpuppy.Server
 				return;
 			}
 
-			var services = new IHttpService[]
+			var routes = new Route[]
 			{
-				new StaticFileService(options.RootDirectory),
-				new IndexFileService(options.RootDirectory),
-				new DirectoryListingService(options.RootDirectory),
+				new Route(HttpMethod.GET, "/", new StaticFileService(options.RootDirectory)),
+				new Route(HttpMethod.GET, "/", new IndexFileService(options.RootDirectory)),
+				new Route(HttpMethod.GET, "/", new DirectoryListingService(options.RootDirectory)),
 			};
 
-			Task httpd = HttpServer.ListenAsync(services, options.Port, cancellationSource.Token);
+			Task httpd = HttpServer.ListenAsync(routes, options.Port, cancellationSource.Token);
 			await httpd;
 		}
 

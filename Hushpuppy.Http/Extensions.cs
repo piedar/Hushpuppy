@@ -36,7 +36,7 @@ namespace Hushpuppy.Http
 					StringComparison.InvariantCultureIgnoreCase));
 		}
 
-		public static String ResolveLocalPath(this DirectoryInfo root, Uri url)
+		public static String ResolveLocalPath(this Uri url, DirectoryInfo root)
 		{
 			String relativePath = Uri.UnescapeDataString(url.AbsolutePath).TrimStart('/');
 			String fullPath = Path.GetFullPath(Path.Combine(root.FullName, relativePath));
