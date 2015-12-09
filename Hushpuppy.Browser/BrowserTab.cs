@@ -100,7 +100,7 @@ namespace Hushpuppy.Browser
 			{
 				using (Stream stream = await content.ReadAsStreamAsync())
 				{
-					return new Bitmap(stream);
+					return new Bitmap(stream).Clone();
 				}
 			}
 		}
