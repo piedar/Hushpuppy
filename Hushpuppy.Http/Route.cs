@@ -19,6 +19,8 @@
 //  You should have received a copy of the GNU General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Hushpuppy.Http
 {
@@ -46,15 +48,19 @@ namespace Hushpuppy.Http
 
 	public class Route
 	{
-		public Route(HttpMethod method, String prefix, IHttpService service)
+		public Route(IHttpService service, String relativePrefix, IEnumerable<HttpMethod> methoods)
 		{
-			Method = method;
-			Prefix = prefix;
 			Service = service;
+			RelativePrefix = relativePrefix;
+			Methods = methoods.ToList();
 		}
 
-		public HttpMethod Method { get; private set; }
-		public String Prefix { get; private set; }
+		public Route(HttpMethod method, String relativePrefix, IHttpService service)
+			: this(service, relativePrefix, new [] { method })
+		{ }
+
 		public IHttpService Service { get; private set; }
+		public String RelativePrefix { get; private set; }
+		public IReadOnlyCollection<HttpMethod> Methods { get; private set; }
 	}
 }

@@ -32,11 +32,17 @@ namespace Hushpuppy.Server
 {
 	class Options
 	{
-		[Value(0, HelpText="Root directory to serve", Required=true)]
+		[Value(0, HelpText="Root directory to serve.", Required=true)]
 		public DirectoryInfo RootDirectory { get; set; }
 
-		[Option(HelpText="Port to listen on", Default=8080)]
-		public Int32 Port { get; set; }
+		[Option(Default="localhost")]
+		public String HostName { get; set; }
+
+		[Option(HelpText="Port for listening. If omitted, OS assigns an unused port.")]
+		public Int32? Port { get; set; }
+
+		[Option(HelpText="Print debug messages to the console.", Default=false)]
+		public Boolean Debug { get; set; }
 	}
 
 	static class ConsoleProgram
@@ -58,6 +64,18 @@ namespace Hushpuppy.Server
 				return;
 			}
 
+			if (options.Debug)
+			{
+				Debug.Listeners.Add(new ConsoleTraceListener());
+			}
+
+			UriBuilder host = new UriBuilder
+			{
+				Scheme = "http",
+				Host = options.HostName,
+				Port = options.Port ?? HttpServer.GetUnusedPort(),
+			};
+
 			var routes = new Route[]
 			{
 				new Route(HttpMethod.GET, "/", new StaticFileService(options.RootDirectory)),
@@ -65,7 +83,7 @@ namespace Hushpuppy.Server
 				new Route(HttpMethod.GET, "/", new DirectoryListingService(options.RootDirectory)),
 			};
 
-			Task httpd = HttpServer.ListenAsync(routes, options.Port, cancellationSource.Token);
+			Task httpd = HttpServer.ListenAsync(host.Uri, routes, cancellationSource.Token);
 			await httpd;
 		}
 

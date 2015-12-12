@@ -35,7 +35,7 @@ namespace Hushpuppy.Http
 	/// </summary>
 	public static class HttpServer
 	{
-		private static Int32 GetUnusedPort()
+		public static Int32 GetUnusedPort()
 		{
 			TcpListener listener = new TcpListener(IPAddress.Loopback, 0);
 			listener.Start();
@@ -45,18 +45,18 @@ namespace Hushpuppy.Http
 		}
 
 		/// <summary>
-		/// Listens for Http requests asynchronously and serves them with the given <paramref name="services"/>.
+		/// Listens for Http requests asynchronously on the <paramref name="host"/> and directs them to the <paramref name="routes"/>.
 		/// </summary>
-		/// <param name="services">Collection of services that will serve requests.</param>
-		/// <param name="port">Port to listen on (Optional).</param>
+		/// <param name="host"></param>
+		/// <param name="routes">Collection of routes that will serve requests.</param>
 		/// <param name="cancellation">Cancellation token to stop listening (Optional).</param>
-		public static async Task ListenAsync(IReadOnlyCollection<Route> routes, Int32? port = null, CancellationToken cancellation = default(CancellationToken))
+		public static async Task ListenAsync(Uri host, IReadOnlyCollection<Route> routes, CancellationToken cancellation = default(CancellationToken))
 		{
-			port = port ?? GetUnusedPort();
-
 			HttpListener listener = new HttpListener();
-			listener.Prefixes.Add("http://*:" + port.ToString() + "/");
+			listener.Prefixes.Add(host.ToString());
 			listener.Start();
+
+			Debug.WriteLine("Listening for requests at {0}", host);
 
 			List<Task> pendingTasks = new List<Task>();
 
@@ -99,18 +99,18 @@ namespace Hushpuppy.Http
 
 			try
 			{
-				IEnumerable<Route> matchingRoutes = routes.Where(route => IsMatch(route, context));
+				IEnumerable<Route> matchingRoutes = routes.Where(route => IsMatch(route, context.Request));
 				foreach (Route route in matchingRoutes)
 				{
 					try
 					{
 						await route.Service.ServeAsync(context);
-						Debug.WriteLine("{0} successfully served {1}", route.Service.ToString(), context.Request.Url);
+						Debug.WriteLine("{0} successfully served {1}", route.Service, context.Request.Url);
 						return; // success
 					}
 					catch (Exception ex)
 					{
-						Debug.WriteLine("{0} failed to serve {1}", route.Service.ToString(), context.Request.Url);
+						Debug.WriteLine("{0} failed to serve {1}", route.Service, context.Request.Url);
 						Debug.WriteLine("\t" + ex.GetType() + ": " + ex.Message);
 					}
 				}
@@ -124,13 +124,11 @@ namespace Hushpuppy.Http
 			}
 		}
 
-		private static Boolean IsMatch(Route route, HttpListenerContext context)
+		private static Boolean IsMatch(Route route, HttpListenerRequest request)
 		{
-			String routePrefix = route.Prefix.TrimStart('/');
-			String requestPath = context.Request.Url.AbsolutePath.TrimStart('/');
-
-			return route.Method == context.Request.HttpMethod
-				&& requestPath.StartsWith(routePrefix);
+			String requestPath = request.Url.AbsolutePath.TrimStart('/');
+			return route.Methods.Any(method => method == request.HttpMethod)
+				&& requestPath.StartsWith(route.RelativePrefix.TrimStart('/'));
 		}
 	}
 }
