@@ -184,9 +184,9 @@ Global
 		$26.FileWidth = 120
 		$26.TabsToSpaces = False
 		$26.NoTabsAfterNonTabs = True
-		$26.inheritsSet = VisualStudio
+		$26.inheritsSet = null
 		$26.inheritsScope = text/plain
-		$26.scope = text/x-csharp
+		$26.scope = application/config+xml
 		$0.CSharpFormattingPolicy = $27
 		$27.IndentSwitchBody = True
 		$27.AnonymousMethodBraceStyle = NextLine

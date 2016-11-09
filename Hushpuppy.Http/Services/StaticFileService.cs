@@ -47,23 +47,93 @@ namespace Hushpuppy.Http.Services
 
 			String path = context.Request.Url.ResolveLocalPath(_root);
 			FileInfo file = new FileInfo(path);
-			return ServeFileAsync(file, context.Response);
+			return ServeFileAsync(file, context.Request, context.Response);
 		}
 
-		internal static async Task ServeFileAsync(FileInfo file, HttpListenerResponse response)
+		internal static async Task ServeFileAsync(FileInfo file, HttpListenerRequest request, HttpListenerResponse response)
 		{
 			using (Stream input = file.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 			{
 				String mime = file.GetMimeType();
 				response.ContentType = mime ?? "application/octet-stream";
 				response.ContentLength64 = input.Length;
-				response.AddHeader("Date", DateTime.Now.ToString("r"));
-				response.AddHeader("Last-Modified", file.LastWriteTime.ToString("r"));
+				response.Headers["Date"] = DateTime.Now.ToString("r");
+				response.Headers["Last-Modified"] = file.LastWriteTime.ToString("r");
+				response.Headers["Accept-Ranges"] = "bytes";
 
 				response.StatusCode = (Int32)HttpStatusCode.OK; // Must be set before writing to OutputStream.
 
-				await input.CopyToAsync(response.OutputStream).ConfigureAwait(false);
+				long length = file.Length;
+
+				long start;
+				long? end;
+				if (!TryGetBytesRange(request, out start, out end))
+				{
+					start = 0;
+					end = null;
+				}
+
+				end = end ?? (input.Length - 1);
+				length = end.Value - start + 1;
+
+				if (length < 0)
+				{
+					throw new InvalidOperationException("Unexpected length: " + length);
+				}
+
+				response.StatusCode = (Int32)HttpStatusCode.PartialContent;
+				response.Headers["Content-Length"] = length.ToString();
+				response.Headers["Content-Range"] = $"bytes {start}-{end}/{file.Length}";
+
+				input.Position = start;
+
+				// todo: extension method
+				int bytesRead = 0;
+				long bytesRemaining = length;
+				Byte[] buffer = new Byte[8192];
+				while (bytesRemaining > 0 &&
+				       (bytesRead = await input.ReadAsync(buffer, 0, Convert.ToInt32(Math.Min(buffer.Length, bytesRemaining))).ConfigureAwait(false)) > 0)
+				{
+					await response.OutputStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
+					bytesRemaining -= bytesRead;
+				}
 			}
+		}
+
+		private static bool TryGetBytesRange(HttpListenerRequest request, out long start, out long? end)
+		{
+			start = 0;
+			end = null;
+
+			String range = request.Headers.Get("Range");
+			if (!String.IsNullOrWhiteSpace(range))
+			{
+				String[] rangeParts = range.Split('=');
+				if (rangeParts.Length >= 2)
+				{
+					if (rangeParts[0].Equals("bytes", StringComparison.InvariantCultureIgnoreCase))
+					{
+						String[] bytesRangeParts = rangeParts[1].Split('-');
+						if (bytesRangeParts.Length >= 1)
+						{
+							Int64.TryParse(bytesRangeParts[0], out start);
+
+							if (bytesRangeParts.Length >= 2)
+							{
+								long realEnd;
+								if (Int64.TryParse(bytesRangeParts[1], out realEnd))
+								{
+									end = realEnd;
+								}
+							}
+
+							return true;
+						}
+					}
+				}
+			}
+
+			return false;
 		}
 	}
 }

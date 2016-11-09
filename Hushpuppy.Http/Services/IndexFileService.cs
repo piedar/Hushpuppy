@@ -68,7 +68,7 @@ namespace Hushpuppy.Http.Services
 				try
 				{
 					FileInfo file = new FileInfo(indexPath);
-					await StaticFileService.ServeFileAsync(file, context.Response).ConfigureAwait(false);
+					await StaticFileService.ServeFileAsync(file, context.Request, context.Response).ConfigureAwait(false);
 					return; // success
 				}
 				catch (Exception ex)
