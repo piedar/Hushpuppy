@@ -50,13 +50,11 @@ namespace Hushpuppy.Http
 		/// <param name="host"></param>
 		/// <param name="routes">Collection of routes that will serve requests.</param>
 		/// <param name="cancellation">Cancellation token to stop listening (Optional).</param>
-		public static async Task ListenAsync(Uri host, IReadOnlyCollection<Route> routes, CancellationToken cancellation = default(CancellationToken))
+		public static async Task ListenForeverAsync(IReadOnlyCollection<Uri> endpoints, IReadOnlyCollection<Route> routes, CancellationToken cancellation = default(CancellationToken))
 		{
 			HttpListener listener = new HttpListener();
-			listener.Prefixes.Add(host.ToString());
+			listener.Prefixes.AddRange(endpoints.Select(ep => ep.ToString()));
 			listener.Start();
-
-			Debug.WriteLine("Listening for requests at {0}", host);
 
 			List<Task> pendingTasks = new List<Task>();
 

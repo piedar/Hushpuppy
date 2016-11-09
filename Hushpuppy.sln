@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Torturer", "Hushp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Server", "Hushpuppy.Server\Hushpuppy.Server.csproj", "{AA6E6BD9-D3AA-49DB-8D3E-64D664F4BD54}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Http.Test", "Hushpuppy.Http.Test\Hushpuppy.Http.Test.csproj", "{64FC35D3-F2C8-4527-9D2C-101500D33B5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hushpuppy.Server.Test", "Hushpuppy.Server.Test\Hushpuppy.Server.Test.csproj", "{D46D3D91-B490-40B3-A892-2E7F06454981}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|AnyCPU = Debug|AnyCPU
@@ -31,6 +35,14 @@ Global
 		{C471CFC8-B1E7-4635-B6D0-764142758042}.Debug|AnyCPU.Build.0 = Debug|Any CPU
 		{C471CFC8-B1E7-4635-B6D0-764142758042}.Release|AnyCPU.ActiveCfg = Release|Any CPU
 		{C471CFC8-B1E7-4635-B6D0-764142758042}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{64FC35D3-F2C8-4527-9D2C-101500D33B5D}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{64FC35D3-F2C8-4527-9D2C-101500D33B5D}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{64FC35D3-F2C8-4527-9D2C-101500D33B5D}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{64FC35D3-F2C8-4527-9D2C-101500D33B5D}.Release|AnyCPU.Build.0 = Release|Any CPU
+		{D46D3D91-B490-40B3-A892-2E7F06454981}.Debug|AnyCPU.ActiveCfg = Debug|Any CPU
+		{D46D3D91-B490-40B3-A892-2E7F06454981}.Debug|AnyCPU.Build.0 = Debug|Any CPU
+		{D46D3D91-B490-40B3-A892-2E7F06454981}.Release|AnyCPU.ActiveCfg = Release|Any CPU
+		{D46D3D91-B490-40B3-A892-2E7F06454981}.Release|AnyCPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		Policies = $0
@@ -40,12 +52,16 @@ Global
 		$0.NameConventionPolicy = $2
 		$2.Rules = $3
 		$3.NamingRule = $4
-		$4.Name = Namespaces
-		$4.AffectedEntity = Namespace
+		$4.Name = Type Parameters
+		$4.AffectedEntity = TypeParameter
 		$4.VisibilityMask = VisibilityMask
 		$4.NamingStyle = PascalCase
 		$4.IncludeInstanceMembers = True
 		$4.IncludeStaticEntities = True
+		$4.RequiredPrefixes = $31
+		$31.String = T
+		$4.RequiredSuffixes = $32
+		$32.String = Exception
 		$3.NamingRule = $5
 		$5.Name = Types
 		$5.AffectedEntity = Class, Struct, Enum, Delegate
@@ -197,6 +213,18 @@ Global
 		$27.inheritsSet = Mono
 		$27.inheritsScope = text/x-csharp
 		$27.scope = text/x-csharp
+		$27.NewLinesForBracesInProperties = True
+		$27.NewLinesForBracesInAnonymousMethods = True
+		$27.NewLinesForBracesInControlBlocks = True
+		$27.NewLinesForBracesInLambdaExpressionBody = True
+		$27.NewLineForElse = True
+		$27.NewLineForCatch = True
+		$27.NewLineForFinally = True
+		$27.SpacingAfterMethodDeclarationName = False
+		$27.SpaceAfterMethodCallName = False
+		$27.SpaceBeforeOpenSquareBracket = False
+		$27.IndentBraces = True
+		$27.IndentSwitchSection = True
 		$0.TextStylePolicy = $28
 		$28.FileWidth = 120
 		$28.TabsToSpaces = False

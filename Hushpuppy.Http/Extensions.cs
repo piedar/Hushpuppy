@@ -47,6 +47,14 @@ namespace Hushpuppy.Http
 			return fullPath;
 		}
 
+		public static void AddRange<T>(this ICollection<T> collection, IEnumerable<T> things)
+		{
+			foreach (T thing in things)
+			{
+				collection.Add(thing);
+			}
+		}
+
 		/// <summary>
 		/// Removes and enumerates items from <paramref name="source"/> where <paramref name="predicate"/> returns true or is null.
 		/// </summary>
