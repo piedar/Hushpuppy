@@ -45,19 +45,40 @@ namespace Hushpuppy.Http
 			}
 		}
 
+		public class TortureResult
+		{
+			public Uri Target { get; internal set; }
+
+			public Int64 RequestCount { get; internal set; }
+
+			public Int64 BytesRead { get; internal set; }
+
+			public TimeSpan TimeElapsed { get; internal set; }
+
+			public TimeSpan AverageTimePerRequest
+			{
+				get { return TimeSpan.FromMilliseconds(TimeElapsed.TotalMilliseconds / RequestCount); }
+			}
+
+			public override string ToString()
+			{
+				return string.Format("[TortureResult: Target={0}, RequestCount={1}, BytesRead={2}, TimeElapsed={3}, AverageTimePerRequest={4}]", Target, RequestCount, BytesRead, TimeElapsed, AverageTimePerRequest);
+			}
+		}
+
 		/// <summary>
 		/// Concurrently requests the given <paramref name="target"/> <paramref name="requestCount"/> times.
 		/// </summary>
 		/// <param name="target">Uri to torture.</param>
 		/// <param name="requestCount">Number of requests.</param>
 		/// <param name="concurrentRequestLimit">Maximum number of concurrent requests.</param>
-		public static async Task TortureAsync(Uri target, Int64 requestCount, Int64 concurrentRequestLimit = 22)
+		public static async Task<TortureResult> TortureAsync(Uri target, Int64 requestCount, Int64 concurrentRequestLimit = 22)
 		{
 			Int64 count = 0;
-			Int64 charsRead = 0;
+			Int64 bytesRead = 0;
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
-			var pendingTasks = new List<Task<String>>();
+			var pendingTasks = new List<Task<Byte[]>>();
 
 			using (HttpClient client = new HttpClient())
 			{
@@ -65,40 +86,27 @@ namespace Hushpuppy.Http
 				{
 					count = index + 1;
 
-					Task<String> fetchTask = client.GetStringAsync(target);
+					Task<Byte[]> fetchTask = client.GetByteArrayAsync(target);
 					pendingTasks.Add(fetchTask);
 
 					if (pendingTasks.Count > concurrentRequestLimit)
 					{
 						foreach (var task in pendingTasks.ConsumeWhere(null))
 						{
-							String result = await task;
-							charsRead += result.Length;
+							Byte[] result = await task;
+							bytesRead += result.LongLength;
 						}
 					}
-
-					/*
-					using (HttpResponseMessage response = await client.GetAsync(target))
-					using (HttpContent content = response.Content)
-					{
-						String result = await content.ReadAsStringAsync();
-						lock (stopwatch)
-						{
-							charsRead += result.Length;
-						}
-					}
-					*/
 				}
 
 				foreach (var task in pendingTasks.ConsumeWhere(null))
 				{
-					String result = await task;
-					charsRead += result.Length;
+					Byte[] result = await task;
+					bytesRead += result.LongLength;
 				}
 			}
 
-			Console.WriteLine("Tortured {0} with {1} requests in {2} ({3:0} chars / ms)",
-				target, count, stopwatch.Elapsed, charsRead / stopwatch.Elapsed.TotalMilliseconds);
+			return new TortureResult { Target = target, RequestCount = requestCount, BytesRead = bytesRead, TimeElapsed = stopwatch.Elapsed };
 		}
 	}
 }

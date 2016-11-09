@@ -50,15 +50,15 @@ namespace Hushpuppy.Torturer
 					cancellationSource.Cancel();
 				};
 
-			ParserResult<Options> result = CommandLine.Parser.Default.ParseArguments<Options>(args);
-			Options options = result.MapResult(opts => opts, errors => null);
+			ParserResult<Options> parseResult = CommandLine.Parser.Default.ParseArguments<Options>(args);
+			Options options = parseResult.MapResult(opts => opts, errors => null);
 			if (options == null)
 			{
 				return;
 			}
 
-			Task httpdTorturer = HttpTorturer.TortureAsync(options.Target, options.Requests);
-			await httpdTorturer;
+			var result = await HttpTorturer.TortureAsync(options.Target, options.Requests);
+			Console.WriteLine(result);
 		}
 
 		static void Main(String[] args)

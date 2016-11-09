@@ -27,6 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using Hushpuppy.Http;
 
 namespace Hushpuppy.Server.Test
 {
@@ -47,22 +48,25 @@ namespace Hushpuppy.Server.Test
 			return paths.Select(path => new DirectoryInfo(path)).First(dir => dir.Exists);
 		}
 
-		[Fact]
-		public async Task Listens()
+		internal static ServerSettings GetDefaultSettings()
 		{
-			ServerSettings settings = new ServerSettings()
-			{
+			return new ServerSettings() {
 				Protocol = "http",
 				HostName = "localhost",
 				RootDirectory = GetTestRootDirectory(),
 			};
+		}
 
+		[Fact]
+		public async Task Listens()
+		{
+			ServerSettings settings = GetDefaultSettings();
 			using (CancellationTokenSource cancellation = new CancellationTokenSource())
 			{
 				ServerHost host = new ServerHost(settings);
 				Task serveForever = host.ServeForeverAsync(cancellation.Token);
 
-				Task testResponses = Task.Run(
+				Task test = Task.Run(
 					async () =>
 					{
 						var getTasks = host.Endpoints.Select(ep => _client.GetAsync(ep)).ToList();
@@ -79,7 +83,36 @@ namespace Hushpuppy.Server.Test
 						}
 					});
 
-				await Task.WhenAny(testResponses, serveForever);
+				await Task.WhenAny(test, serveForever);
+			}
+		}
+
+		[Theory]
+		[InlineData(100)]
+		[InlineData(1000)]
+		[InlineData(10000)]
+		public async Task HandlesManyRequests(Int64 requestCount)
+		{
+			ServerSettings settings = GetDefaultSettings();
+			using (CancellationTokenSource cancellation = new CancellationTokenSource())
+			{
+				ServerHost host = new ServerHost(settings);
+				Task serveForever = host.ServeForeverAsync(cancellation.Token);
+
+				Task test = Task.Run(
+					async () =>
+					{
+						var tortureTasks = host.Endpoints.Select(ep => HttpTorturer.TortureAsync(ep, requestCount)).ToList();
+						foreach (var task in tortureTasks)
+						{
+							var result = await task;
+							_output.WriteLine(result.ToString());
+						}
+					});
+
+				await Task.WhenAny(test, serveForever);
+
+
 			}
 		}
 	}
