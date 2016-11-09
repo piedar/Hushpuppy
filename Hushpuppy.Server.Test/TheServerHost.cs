@@ -111,8 +111,6 @@ namespace Hushpuppy.Server.Test
 					});
 
 				await Task.WhenAny(test, serveForever);
-
-
 			}
 		}
 	}

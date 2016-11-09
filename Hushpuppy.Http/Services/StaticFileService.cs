@@ -62,7 +62,7 @@ namespace Hushpuppy.Http.Services
 
 				response.StatusCode = (Int32)HttpStatusCode.OK; // Must be set before writing to OutputStream.
 
-				await input.CopyToAsync(response.OutputStream);
+				await input.CopyToAsync(response.OutputStream).ConfigureAwait(false);
 			}
 		}
 	}

@@ -66,15 +66,19 @@ namespace Hushpuppy.Http
 
 					try
 					{
-						HttpListenerContext context = await listener.GetContextAsync();
+						HttpListenerContext context = await listener.GetContextAsync().ConfigureAwait(false);
 
 						// Begin serving the request.
 						Task serveTask = ServeAsync(context, routes);
 						pendingTasks.Add(serveTask);
 
 						// Reap completed tasks and propagate exceptions.
-						IEnumerable<Task> completedTasks = pendingTasks.ConsumeWhere(task => task.IsCompleted);
-						await Task.WhenAll(completedTasks);
+						foreach (Task completedTask in pendingTasks.ConsumeWhere(task => task.IsCompleted))
+						{
+							await completedTask.ConfigureAwait(false);
+						}
+
+						await serveTask;
 					}
 					catch (Exception ex)
 					{
@@ -86,7 +90,7 @@ namespace Hushpuppy.Http
 			finally
 			{
 				listener.Stop();
-				await Task.WhenAll(pendingTasks);
+				await Task.WhenAll(pendingTasks).ConfigureAwait(false);
 			}
 		}
 
@@ -102,7 +106,7 @@ namespace Hushpuppy.Http
 				{
 					try
 					{
-						await route.Service.ServeAsync(context);
+						await route.Service.ServeAsync(context).ConfigureAwait(false);
 						Debug.WriteLine("{0} successfully served {1}", route.Service, context.Request.Url);
 						return; // success
 					}

@@ -80,7 +80,7 @@ namespace Hushpuppy.Http.Services
 
 			using (StreamWriter writer = new StreamWriter(response.OutputStream))
 			{
-				await writer.WriteAsync(htmlResponse);
+				await writer.WriteAsync(htmlResponse).ConfigureAwait(false);
 			}
 		}
 	}

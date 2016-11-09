@@ -34,17 +34,6 @@ namespace Hushpuppy.Http
 {
 	public static class HttpTorturer
 	{
-		internal static async Task<String> DownloadPageAsync(String uri)
-		{
-			using (HttpClient client = new HttpClient())
-			using (HttpResponseMessage response = await client.GetAsync(uri))
-			using (HttpContent content = response.Content)
-			{
-				String result = await content.ReadAsStringAsync();
-				return result;
-			}
-		}
-
 		public class TortureResult
 		{
 			public Uri Target { get; internal set; }
@@ -74,7 +63,6 @@ namespace Hushpuppy.Http
 		/// <param name="concurrentRequestLimit">Maximum number of concurrent requests.</param>
 		public static async Task<TortureResult> TortureAsync(Uri target, Int64 requestCount, Int64 concurrentRequestLimit = 22)
 		{
-			Int64 count = 0;
 			Int64 bytesRead = 0;
 			Stopwatch stopwatch = Stopwatch.StartNew();
 
@@ -84,8 +72,6 @@ namespace Hushpuppy.Http
 			{
 				for (Int64 index = 0; index < requestCount; index++)
 				{
-					count = index + 1;
-
 					Task<Byte[]> fetchTask = client.GetByteArrayAsync(target);
 					pendingTasks.Add(fetchTask);
 
@@ -93,7 +79,7 @@ namespace Hushpuppy.Http
 					{
 						foreach (var task in pendingTasks.ConsumeWhere(null))
 						{
-							Byte[] result = await task;
+							Byte[] result = await task.ConfigureAwait(false);
 							bytesRead += result.LongLength;
 						}
 					}
@@ -101,7 +87,7 @@ namespace Hushpuppy.Http
 
 				foreach (var task in pendingTasks.ConsumeWhere(null))
 				{
-					Byte[] result = await task;
+					Byte[] result = await task.ConfigureAwait(false);
 					bytesRead += result.LongLength;
 				}
 			}
